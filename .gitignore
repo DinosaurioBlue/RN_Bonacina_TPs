@@ -1,0 +1,9 @@
+desktop.ini
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+.venv/
+venv/
+mlruns/
+mlartifacts/
+runs/
