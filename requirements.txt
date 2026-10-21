@@ -1,0 +1,12 @@
+numpy
+torch
+matplotlib
+scikit-learn
+nltk
+tensorboard
+mlflow
+optuna
+pandas
+ipykernel
+plotly
+nbformat
