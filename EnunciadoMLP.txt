@@ -1,0 +1,20 @@
+A partir de la notebook de Regresión Softmax en TNG, entrenar un modelo de MLP cuya búsqueda de  hiperparámetros debe incluir al menos:
+
+
+
+Distintas funciones de activación
+Distintas cantidades de capas ocultas ( 1, 2 o 3, no más que eso)
+Distintas cantidades de neuronas por capa.
+Distintos optimizadores con distintos parámetros: Adam, RMSProp, SGD, momentos de orden 1 y 2.
+Se deben incluir también los HP buscados en el TP anterior (learning rate, etc).
+
+
+Además encontrar una cantidad de unidades ocultas y capas de forma tal que el problema quede overfiteado.
+
+Analizar lo encontrado a lo ancho de todos los entrenamientos, comparar performances y tiempos de entrenamiento.
+
+
+
+Bonus (y recomiendo que lo prueben para ahorrarse tiempo de entrenamiento): utilizar pruning en optuna.
+
+Bonus recomendado: comparar los resultados con los obtenidos con regresión softmax.
