@@ -1,0 +1,126 @@
+Disclaimer:
+En este .txt se define la estrucura del tp. Este archivo fue escrito unicamente por
+mi sin intervención de ninguna IA. La idea es trabajar aquí y que la inteligencia
+artificial se encargue de la implementación de codigo.
+
+Importante: Tiempo de ejecución
+Tiempo de ejecución: La búsqueda de hiperparametros se realizó en CPU y 
+demoró aproximadamente 20 minutos, de los cuales 10,5 minutos 
+correspondieron al MLP y 9,1 minutos a Softmax. Se evaluaron 100 trials 
+por modelo, con un máximo de 5 épocas por trial y pruning desde la tercera época. 
+Estos tiempos incluyen la preparación de los datos, el entrenamiento, 
+la evaluación en train y validación y el registro de resultados. 
+La evaluación final en test se realizó posteriormente, 
+utilizando los modelos seleccionados sin volver a entrenarlos.
+
+SanityChecks: Se mantendran los SanityChecks del TP anterior.
+
+Metodología del entrenamiento
+1. Definir una única métrica que servirá para evaluar el modelo
+ (Comparación con modelos y selección de “buenos” hiper-parámetros)
+
+2. Entender que es lo que espero de mi modelo
+ (Que sería un buen resultado para esa métrica: Baselines con modelos 
+sencillos y topes mirando resultados de humanos o 
+error de bayes)
+
+3. Entrenar modelo y mirar el Train set para ver si hay alto bias
+ (¿Que tal lejos estoy de lo que supuse en el punto 2?)
+ 
+4. Si tenemos alto bias => Agrandar Red (Aumentar cantidad de 
+parámetros del modelo), Entrenar más tiempo. (Distinguir 
+esto de que el modelo no aprende, por ejemplo learning 
+rate demasiado grande o demasiado chico)
+
+5. Una vez que se logró un bias aceptable 
+mirar performance de CV o dev para ver si hay alta Varianza
+
+6. Si alta varianza => ¿Conseguir más datos, A
+chicar red, Early stop, regularización? Por esto dividimos el DS en 3
+
+7. Puede volver al paso 3 y sacrificar algo de bias para ganar generalización. 
+
+8. Evaluar en Test Set
+
+
+Recomendaciones: no cambiar varios hiper-parámetros al mismo tiempo. Usar algún tipo de técnica de grid search 
+(sklearn) o optimización bayesiana (hyperopt)
+
+
+
+Desarrollo:
+
+Metrica:   Definimos el Accuracy como métrica ya que es un buen indicador del
+desempeño de nuestro modelo, y nos permite hacer comparaciónes con el tp de SoftMax.
+
+En el tp anterior de SoftMax  obtuvimos un Accuracy en validación del 66.11%,
+por lo que en este trabajo se intentará aumentar dicho indicador.
+
+
+
+Preprocesamiento:
+Se mantendran los hiperparametros de preprocesamiento del tp anterior, y los
+de tokenización y normalización.
+
+Dataset:
+Documentos: 18846, Train: 48%,  Dev: 12%, test: 40%.
+
+Seed: 42
+
+Hiperparametros:
+    BS: 2^n  n={5,6,7,8,9}. 
+    normalización de texto = {none, Lemmatize,stem}
+    stopwors = {true,false}
+    Ngrams = {unigramas, unigramas+bigramas}
+    learningRate(LR)= (0.0001,0.1) logaritmico 
+    maxfeatures = {2000,5000,10000}
+    min_df={1,2,5}
+    Capas_ocultas: m={1,2,3}
+    neuronasxcapa: 2^n, n={1,2,3,4,5,6,7,8,9}  (cada capa puede tener distinto número de neuronas)
+    funciones de activacion = {Tanh,ELU,RELU,LeakyRelu}
+    Optimizador = {Adam, RMSprop, SGD}
+    Adam:
+        beta1 = {0.9, 0.95}
+        beta2 = {0.99, 0.999}
+    RMSprop:
+        alpha = {0.9, 0.99}
+        momentum = {0.0, 0.9}
+    SGD:
+        momentum = {0.0, 0.9}
+
+
+- Debe buscar combinación de hiperparametros tal que se maximice overfitting definido de la forma:
+(Accuracy(train)-Accuracy(Dev))=OFM(overfittingmetric).  Solo se remarcará cual es la combinación de hiper-
+parametros que maximize el overfitting bajo esta metrica definida. 
+
+
+Espacio de busqueda:
+Si utilizamos solo 10 valores para LR, tenemos un espacio de busqueda de 176.958.000
+hiperparametros.
+
+Inicialización de pesos w_i aleatoria.
+
+La busqueda de hiperparametros se realizara con TPE pruning de OPTUNA, utilizando 100
+trials por modelo y 5 epocas por trial.  
+Se hace busqueda con softmax para compararcon tp anterior.
+
+
+Media de pesos:  Se medira la media de abs(w_i)
+
+En una primera iteración se encontró una configuración que presentó la mayor 
+OFM observada (dentro de esa iteración): 47,27 puntos porcentuales, en la época 
+4 de un entrenamiento de 5 épocas. En esa época, la accuracy fue 95,92 % en 
+train y 48,65 % en validación. Esta diferencia muestra un ajuste considerablemente 
+mayor sobre los datos de entrenamiento que sobre los de validación.
+
+El modelo tenía dos capas ocultas de 64 y 256 neuronas, ambas con activación Tanh. 
+Se utilizó SGD sin momentum, con learning rate 0,0156964, batch size 32 y 
+semilla 42. El preprocesamiento conservó las stopwords y no aplicó stemming ni 
+lematización. La representación TF-IDF incluyó unigramas y bigramas, 
+un máximo de 10.000 features y min_df = 2. Posteriormente se aplicó 
+normalización mediante StandardScaler, ajustado exclusivamente con train.
+
+Al finalizar la quinta época, la accuracy alcanzó 96,80 % en train y 50,24 % en 
+validación, con una OFM de 46,55 puntos porcentuales. Por tanto, la mayor 
+OFM registrada corresponde a la cuarta época, no a la última.
+

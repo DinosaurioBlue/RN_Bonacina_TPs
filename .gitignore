@@ -7,3 +7,10 @@ venv/
 mlruns/
 mlartifacts/
 runs/
+
+# Cachés y resultados locales de experimentos anteriores
+.experimentos/
+resultados/iteracion01/
+mlflow.db
+mlflow.db-*
+modelos/
